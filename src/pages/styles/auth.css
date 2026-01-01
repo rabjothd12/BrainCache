@@ -1,0 +1,202 @@
+:root {
+  --primary-bg: #fff7ed;
+  --primary-text: #1c1917;
+  --secondary-text: #78716c;
+  --accent: #ea580c;
+  --card-bg: #ffffff;
+  --border: #e7e5e4;
+}
+
+/* ---------- Page ---------- */
+.login-page {
+  min-height: 83vh;
+  background: var(--primary-bg);
+  color: var(--primary-text);
+  font-family: system-ui, sans-serif;
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.logo {
+  font-weight: 700;
+  font-size: 1.3rem;
+}
+
+/* ---------- Title ---------- */
+.login-title {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.login-title h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.login-title p {
+  color: var(--secondary-text);
+  font-size: 0.95rem;
+}
+
+/* ---------- Links ---------- */
+.link {
+  font-size: 0.85rem;
+  color: var(--accent);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  font-family: inherit;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.link:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ---------- Card ---------- */
+.login-box {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  max-width: 900px;
+  margin: auto;
+  padding: 10.5rem;
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+
+/* ---------- Left Form ---------- */
+.login-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.login-left label {
+  font-size: 0.9rem;
+  color: var(--secondary-text);
+}
+
+.login-left input {
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 0.6rem 0;
+  font-size: 1rem;
+  outline: none;
+}
+
+.login-left input:focus {
+  border-color: var(--accent);
+}
+
+/* ---------- Primary Button ---------- */
+.email-btn {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--accent);
+  background: transparent;
+  color: var(--accent);
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.email-btn:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.email-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ---------- Divider ---------- */
+.divider {
+  position: relative;
+  width: 1px;
+  height: 200px;
+  background: var(--border);
+}
+
+.divider span {
+  position: absolute;
+  top: 50%;
+  left: -14px;
+  transform: translateY(-50%);
+  background: var(--card-bg);
+  padding: 0 6px;
+  font-size: 0.85rem;
+  color: var(--secondary-text);
+}
+
+/* ---------- Right (Social) ---------- */
+.login-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.login-right button {
+  padding: 0.75rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: white;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: 0.2s ease;
+}
+
+.login-right button:hover {
+  border-color: var(--accent);
+}
+
+.login-right button:focus {
+  outline: 2px solid var(--accent);
+}
+
+/* ---------- Footer ---------- */
+.login-footer {
+  margin-top: 3rem;
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  font-size: 0.75rem;
+  color: var(--secondary-text);
+}
+
+.login-footer span {
+  cursor: pointer;
+}
+
+.login-footer span:hover {
+  text-decoration: underline;
+}
+
+/* ---------- Responsive ---------- */
+@media (max-width: 768px) {
+  .login-box {
+    flex-direction: column;
+    padding: 1.5rem;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+  }
+
+  .divider span {
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}

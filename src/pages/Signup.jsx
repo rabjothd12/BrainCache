@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import "./styles/auth.css";
 
 function Signup() {
@@ -25,7 +26,12 @@ function Signup() {
   };
 
   return (
-    <div className="login-page">
+    <motion.div
+      className="login-page"
+      initial={{ opacity: 0, y: 30 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+    >
       {/* Title */}
       <div className="login-title">
         <h1>Sign Up</h1>
@@ -37,69 +43,96 @@ function Signup() {
         </p>
       </div>
 
-      <div className="login-box">
+      {/* Card */}
+      <motion.div
+        className="login-box"
+        initial={{ scale: 0.97, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        transition={{ duration: 0.3 }}
+      >
         {/* Left */}
         <form
           className="login-left"
           onSubmit={step === "email" ? handleEmailSubmit : handleSignup}
         >
-          {step === "email" && (
-            <>
-              <label>Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-              <button
-                className="email-btn"
-                type="submit"
-                disabled={!email}
+          <AnimatePresence mode="wait">
+            {step === "email" && (
+              <motion.div
+                key="email"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 20 }}
+                transition={{ duration: 0.25 }}
               >
-                Continue →
-              </button>
-            </>
-          )}
+                <label>Email</label>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                />
 
-          {step === "password" && (
-            <>
-              <label>Password</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+                <motion.button
+                  className="email-btn"
+                  type="submit"
+                  disabled={!email}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Continue →
+                </motion.button>
+              </motion.div>
+            )}
 
-              <label>Confirm Password</label>
-              <input
-                type="password"
-                value={confirmPassword}
-                onChange={(e) =>
-                  setConfirmPassword(e.target.value)
-                }
-                required
-              />
-
-              <button className="email-btn" type="submit">
-                Create Account →
-              </button>
-
-              <button
-                type="button"
-                className="link"
-                onClick={() => {
-                  setPassword("");
-                  setConfirmPassword("");
-                  setStep("email");
-                }}
+            {step === "password" && (
+              <motion.div
+                key="password"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                transition={{ duration: 0.25 }}
               >
-                ← Back
-              </button>
-            </>
-          )}
+                <label>Password</label>
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+
+                <label>Confirm Password</label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) =>
+                    setConfirmPassword(e.target.value)
+                  }
+                  required
+                />
+
+                <motion.button
+                  className="email-btn"
+                  type="submit"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  Create Account →
+                </motion.button>
+
+                <button
+                  type="button"
+                  className="link"
+                  onClick={() => {
+                    setPassword("");
+                    setConfirmPassword("");
+                    setStep("email");
+                  }}
+                >
+                  ← Back
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </form>
 
         {/* Divider */}
@@ -109,18 +142,24 @@ function Signup() {
 
         {/* Right */}
         <div className="login-right">
-          <button>Continue with Google</button>
-          <button>Continue with Facebook</button>
-          <button>Continue with Apple</button>
+          {["Google", "Facebook", "Apple"].map((provider) => (
+            <motion.button
+              key={provider}
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              Continue with {provider}
+            </motion.button>
+          ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Footer */}
       <footer className="login-footer">
         <span>Terms of Use</span>
         <span>Privacy Policy</span>
       </footer>
-    </div>
+    </motion.div>
   );
 }
 

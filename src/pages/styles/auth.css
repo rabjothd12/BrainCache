@@ -1,202 +1,168 @@
-:root {
-  --primary-bg: #fff7ed;
-  --primary-text: #1c1917;
-  --secondary-text: #78716c;
-  --accent: #ea580c;
-  --card-bg: #ffffff;
-  --border: #e7e5e4;
-}
-
-/* ---------- Page ---------- */
+/* ================= AUTH PAGE ================= */
 .login-page {
-  min-height: 83vh;
-  background: var(--primary-bg);
-  color: var(--primary-text);
-  font-family: system-ui, sans-serif;
-  padding: 1.5rem;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 6rem 1rem 4rem; 
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-.logo {
-  font-weight: 700;
-  font-size: 1.3rem;
-}
-
-/* ---------- Title ---------- */
+/* ================= TITLE ================= */
 .login-title {
   text-align: center;
-  margin: 2rem 0;
+  margin-bottom: 3rem;
 }
 
 .login-title h1 {
-  font-size: 2rem;
+  font-size: 2.2rem;
   margin-bottom: 0.5rem;
 }
 
 .login-title p {
-  color: var(--secondary-text);
-  font-size: 0.95rem;
+  color: var(--text);
+  opacity: 0.8;
 }
 
-/* ---------- Links ---------- */
-.link {
-  font-size: 0.85rem;
+.login-title .link {
   color: var(--accent);
-  cursor: pointer;
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: inherit;
+  text-decoration: none;
 }
 
-.link:hover {
-  text-decoration: underline;
-}
-
-.link:focus {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-/* ---------- Card ---------- */
+/* ================= CARD ================= */
 .login-box {
-  background: var(--card-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
+  width: 100%;
   max-width: 900px;
-  margin: auto;
-  padding: 10.5rem;
-  display: flex;
-  gap: 3rem;
-  align-items: center;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 3rem;              
+  padding: 3.5rem;        
+
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* ---------- Left Form ---------- */
-.login-left {
-  flex: 1;
+/* ================= SECTIONS ================= */
+.login-left,
+.login-right {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 1.6rem; 
 }
 
+.login-left > div {
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem; 
+}
+
+
+/* ================= INPUTS ================= */
 .login-left label {
   font-size: 0.9rem;
-  color: var(--secondary-text);
+  opacity: 0.8;
 }
 
 .login-left input {
+  background: transparent;
   border: none;
   border-bottom: 1px solid var(--border);
   padding: 0.6rem 0;
   font-size: 1rem;
-  outline: none;
+  color: var(--text);
+}
+
+.login-left input::placeholder {
+  color: var(--text);
+  opacity: 0.5;
 }
 
 .login-left input:focus {
+  outline: none;
   border-color: var(--accent);
 }
 
-/* ---------- Primary Button ---------- */
+/* ================= PRIMARY BUTTON ================= */
 .email-btn {
-  margin-top: 1rem;
-  padding: 0.75rem;
-  border-radius: 999px;
-  border: 1px solid var(--accent);
-  background: transparent;
-  color: var(--accent);
-  font-size: 0.95rem;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
-
-.email-btn:hover {
   background: var(--accent);
-  color: white;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 999px;
+  cursor: pointer;
 }
 
 .email-btn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-/* ---------- Divider ---------- */
+/* ================= LINKS ================= */
+.link {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+/* ================= DIVIDER ================= */
 .divider {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
   width: 1px;
-  height: 200px;
+  height: 150px; 
   background: var(--border);
 }
 
-.divider span {
-  position: absolute;
-  top: 50%;
-  left: -14px;
-  transform: translateY(-50%);
-  background: var(--card-bg);
-  padding: 0 6px;
-  font-size: 0.85rem;
-  color: var(--secondary-text);
-}
-
-/* ---------- Right (Social) ---------- */
-.login-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-}
-
+/* ================= SOCIAL BUTTONS ================= */
 .login-right button {
-  padding: 0.75rem;
-  border-radius: 999px;
+  background: transparent;
   border: 1px solid var(--border);
-  background: white;
+  color: var(--text);
+  padding: 0.8rem 1.6rem;
+  border-radius: 999px;
   cursor: pointer;
-  font-size: 0.9rem;
-  transition: 0.2s ease;
+  transition: border-color 0.2s ease, color 0.2s ease;
 }
 
 .login-right button:hover {
   border-color: var(--accent);
+  color: var(--accent);
 }
 
-.login-right button:focus {
-  outline: 2px solid var(--accent);
-}
-
-/* ---------- Footer ---------- */
+/* ================= FOOTER ================= */
 .login-footer {
   margin-top: 3rem;
   display: flex;
-  justify-content: center;
   gap: 2rem;
-  font-size: 0.75rem;
-  color: var(--secondary-text);
+  font-size: 0.85rem;
+  color: var(--text);
+  opacity: 0.6;
 }
 
-.login-footer span {
-  cursor: pointer;
-}
-
-.login-footer span:hover {
-  text-decoration: underline;
-}
-
-/* ---------- Responsive ---------- */
+/* ================= MOBILE FIX ================= */
 @media (max-width: 768px) {
   .login-box {
-    flex-direction: column;
-    padding: 1.5rem;
+    grid-template-columns: 1fr;
+    padding: 2rem;
+    gap: 2rem;
   }
 
   .divider {
-    width: 100%;
-    height: 1px;
-  }
-
-  .divider span {
-    left: 50%;
-    transform: translate(-50%, -50%);
+    display: none;
   }
 }

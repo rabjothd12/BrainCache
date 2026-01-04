@@ -20,7 +20,7 @@ function TemplateCarousel() {
 
   return (
     <section className="templates">
-      <h2>Choose a template you’ll love</h2>
+      <h2>Categories you’ll love</h2>
 
       <div className="carousel-wrapper">
         <button className="carousel-btn left" onClick={scrollLeft}>

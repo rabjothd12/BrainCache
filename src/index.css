@@ -1,6 +1,28 @@
+/* LIGHT MODE */
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --text: #0f172a;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --accent: #ea580c;
+}
+
+/* DARK MODE */
+:root[data-theme="dark"] {
+  --bg: #0b0f19;          
+  --card: #111827;       
+  --text: #e5e7eb;       
+  --border: #1f2937;     
+  --accent: #fb923c;     
+}
+
 body {
-  margin: 0;
-  font-family: system-ui, Arial, sans-serif;
-  background-color: #FFF7ED;
-  color: #1C1917;
+  background-color: var(--bg);
+  color: var(--text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
 }

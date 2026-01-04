@@ -1,8 +1,10 @@
 .home {
   font-family: system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
 }
 
-/* HERO */
+/* ================= HERO ================= */
 .hero {
   background-image: url("https://i.pinimg.com/736x/b7/f4/94/b7f4949a752617b41f3c3721cb04c532.jpg");
   background-size: cover;
@@ -12,19 +14,28 @@
   align-items: center;
   padding: 4rem;
   position: relative;
+  overflow: hidden;
 }
 
+/* LIGHT MODE overlay */
 .hero::before {
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,0.45);
+  background: rgba(255, 255, 255, 0.55);
+  z-index: 0;
+}
+
+/* DARK MODE overlay */
+[data-theme="dark"] .hero::before {
+  background: rgba(0, 0, 0, 0.55);
 }
 
 .hero-content {
   position: relative;
+  z-index: 1;
   max-width: 600px;
-  color: white;
+  color: var(--text);
 }
 
 .hero-content h1 {
@@ -35,31 +46,39 @@
 .hero-content p {
   margin: 1.5rem 0;
   font-size: 1.1rem;
+  opacity: 0.9;
 }
 
-/* BUTTONS */
+/* ================= BUTTONS ================= */
 .btn-primary {
-  background: #ea580c;
-  color: white;
+  background: var(--accent);
+  color: #fff;
   padding: 0.9rem 2rem;
   border-radius: 999px;
   text-decoration: none;
+  display: inline-block;
 }
 
 .btn-secondary {
-  border: 1px solid #ea580c;
-  color: #ea580c;
+  border: 1px solid var(--accent);
+  color: var(--accent);
   padding: 0.8rem 2rem;
   border-radius: 999px;
   text-decoration: none;
+  display: inline-block;
 }
 
-/* FEATURES */
+/* ================= FEATURES ================= */
 .features {
   padding: 5rem 2rem;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 2rem;
+}
+
+.feature-card {
+  background: var(--card);
+  border-radius: 16px;
 }
 
 .feature-card img {
@@ -73,20 +92,18 @@
   margin-top: 1rem;
 }
 
-/* SPLIT (UPDATED) */
+/* ================= SPLIT ================= */
 .split {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 3rem;
   padding: 5rem 2rem;
   align-items: center;
-
-  background: #fff7ed; /* added for blending */
+  background: var(--bg);
 }
 
 .split-image {
   position: relative;
-  background: #fff7ed;
   border-radius: 24px;
   overflow: hidden;
 }
@@ -95,28 +112,41 @@
   content: "";
   position: absolute;
   inset: 0;
-  background: rgba(255, 247, 237, 0.55);
-  pointer-events: none;
+  background: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .split-image::after {
+  background: rgba(0, 0, 0, 0.35);
 }
 
 .split-image img {
   width: 100%;
   border-radius: 24px;
-  mix-blend-mode: multiply;
-  opacity: 0.95;
   position: relative;
   z-index: 1;
 }
 
-/* CTA */
+/* ================= CTA ================= */
 .cta {
-  background: #1c1917;
-  color: white;
+  background: var(--card);
+  color: var(--text);
   text-align: center;
   padding: 5rem 2rem;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* RESPONSIVE */
+/* CTA heading */
+.cta h2 {
+  margin-bottom: 2rem;
+  color: var(--text);
+}
+
+/* CTA button already uses accent */
+.cta .btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+/* ================= RESPONSIVE ================= */
 @media (max-width: 768px) {
   .hero {
     padding: 2rem;
@@ -132,7 +162,7 @@
   }
 }
 
-/* TEMPLATE CAROUSEL */
+/* ================= TEMPLATE CAROUSEL ================= */
 .templates {
   padding: 5rem 2rem;
   text-align: center;
@@ -166,7 +196,7 @@
   height: 180px;
   object-fit: cover;
   border-radius: 16px;
-  border: 1px solid #e7e5e4;
+  border: 1px solid var(--border);
   transition: transform 0.3s ease;
 }
 
@@ -176,8 +206,8 @@
 
 /* Buttons */
 .carousel-btn {
-  background: white;
-  border: 1px solid #e7e5e4;
+  background: var(--bg);
+  border: 1px solid var(--border);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -195,7 +225,6 @@
   right: 0;
 }
 
-/* Mobile */
 @media (max-width: 768px) {
   .carousel-btn {
     display: none;

@@ -40,11 +40,11 @@ function CreateBlog() {
 
   const autoSaveDraft = async () => {
     try {
-      let url = "http://localhost:5000/api/blogs";
+      let url = `${import.meta.env.VITE_API_URL}/api/blogs`;
       let method = "POST";
 
       if (draftId) {
-        url = `http://localhost:5000/api/blogs/${draftId}`;
+        url = `${import.meta.env.VITE_API_URL}/api/blogs/${draftId}`;
         method = "PUT";
       }
 
@@ -78,15 +78,18 @@ function CreateBlog() {
   // 🔥 AI IDEA
   const generateIdea = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/ai/idea", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          topic: title || category || "blog ideas",
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/ai/idea`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            topic: title || category || "blog ideas",
+          }),
+        }
+      );
 
       const data = await res.json();
       setIdeas(data.idea);
@@ -99,7 +102,6 @@ function CreateBlog() {
     if (!ideas) return;
 
     const lines = ideas.split("\n").filter(Boolean);
-
     setTitle(lines[0] || "");
     setContent(lines.slice(1).join("\n"));
   };
@@ -109,13 +111,16 @@ function CreateBlog() {
     if (!content) return;
 
     try {
-      const res = await fetch("http://localhost:5000/api/ai/autocomplete", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ content }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/ai/autocomplete`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ content }),
+        }
+      );
 
       const data = await res.json();
       setSuggestion(data.text);
@@ -134,20 +139,23 @@ function CreateBlog() {
     e.preventDefault();
 
     try {
-      await fetch(`http://localhost:5000/api/blogs/${draftId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title,
-          category,
-          content,
-          image,
-          isDraft: false,
-        }),
-      });
+      await fetch(
+        `${import.meta.env.VITE_API_URL}/api/blogs/${draftId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title,
+            category,
+            content,
+            image,
+            isDraft: false,
+          }),
+        }
+      );
 
       navigate("/dashboard");
     } catch (error) {
@@ -170,12 +178,10 @@ function CreateBlog() {
         <input type="file" onChange={handleImageUpload} />
         {image && <img src={image} alt="preview" />}
 
-        {/* 🔥 AI IDEA */}
         <button type="button" onClick={generateIdea}>
           💡 Generate Ideas
         </button>
 
-        {/* 🔥 AI IDEA OUTPUT */}
         {ideas && (
           <div className="ai-box">
             <h3>AI Ideas</h3>
@@ -192,12 +198,10 @@ function CreateBlog() {
           onChange={(e) => setContent(e.target.value)}
         />
 
-        {/* 🔥 AUTOCOMPLETE */}
         <button type="button" onClick={getSuggestion}>
           ✨ Continue Writing
         </button>
 
-        {/* 🔥 AUTOCOMPLETE OUTPUT */}
         {suggestion && (
           <div className="ai-box">
             <h3>AI Continuation</h3>

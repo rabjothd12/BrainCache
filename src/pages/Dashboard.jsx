@@ -6,15 +6,25 @@ import BlogCard from "../components/BlogCard";
 import "./styles/dashboard.css";
 
 function Dashboard() {
-  const { blogs } = useBlogs(); // ✅ fixed
+  const { blogs } = useBlogs();
 
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 🛡️ prevent crash before data loads
-  if (!blogs) return <p>Loading...</p>;
+  if (!blogs || blogs.length === 0) {
+    return (
+      <div className="dashboard">
+        <h1>Your Blogs</h1>
+        <p className="empty-text">
+          No blogs yet — start writing your first idea ✨
+        </p>
 
-  console.log("DASHBOARD BLOGS:", blogs); // optional debug
+        <Link to="/write" className="create-btn">
+          + Create New Blog
+        </Link>
+      </div>
+    );
+  }
 
   // Categories
   const categories = [
@@ -42,6 +52,11 @@ function Dashboard() {
 
     return matchesCategory && matchesSearch;
   });
+
+  // 🔥 Sort latest first
+  const sortedBlogs = [...filteredBlogs].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+  );
 
   return (
     <motion.div
@@ -81,18 +96,20 @@ function Dashboard() {
         />
       </div>
 
-      {filteredBlogs.length > 0 ? (
+      {sortedBlogs.length > 0 ? (
         <div className="dashboard-grid">
-          {filteredBlogs.map((blog) => (
+          {sortedBlogs.map((blog) => (
             <BlogCard
-              key={blog._id}               // 🔥 FIXED
-              id={blog._id}                // 🔥 FIXED
+              key={blog._id}
+              id={blog._id}
               {...blog}
             />
           ))}
         </div>
       ) : (
-        <p className="empty-text">No blogs found.</p>
+        <p className="empty-text">
+          No blogs match your search — try something else 🔍
+        </p>
       )}
     </motion.div>
   );

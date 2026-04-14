@@ -4,25 +4,30 @@ const BlogContext = createContext();
 
 export const BlogProvider = ({ children }) => {
   const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const token = localStorage.getItem("token");
 
-  // 🔥 FETCH BLOGS (SOURCE OF TRUTH)
+  const API = import.meta.env.VITE_API_URL;
+
+
   const fetchBlogs = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/blogs");
-
+      const res = await fetch(`${API}/api/blogs`);
       const data = await res.json();
+
       setBlogs(data);
     } catch (error) {
       console.error("Error fetching blogs:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // 🔥 ADD BLOG (THEN REFETCH)
+
   const addBlog = async (blog) => {
     try {
-      const res = await fetch("http://localhost:5000/api/blogs", {
+      const res = await fetch(`${API}/api/blogs`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,39 +40,33 @@ export const BlogProvider = ({ children }) => {
 
       if (!res.ok) throw new Error(data.message);
 
-      // 🔥 DON'T trust local state → refetch
-      fetchBlogs();
-
+      fetchBlogs(); 
     } catch (error) {
       console.error("Error adding blog:", error);
     }
   };
 
-  // 🔥 DELETE BLOG (THEN REFETCH)
   const deleteBlog = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/blogs/${id}`, {
+      await fetch(`${API}/api/blogs/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      // 🔥 ALWAYS sync with backend
-      fetchBlogs();
-
+      fetchBlogs(); 
     } catch (error) {
       console.error("Error deleting blog:", error);
     }
   };
 
-  // 🔥 FETCH ON LOAD
   useEffect(() => {
     fetchBlogs();
   }, []);
 
   return (
-    <BlogContext.Provider value={{ blogs, addBlog, deleteBlog }}>
+    <BlogContext.Provider value={{ blogs, addBlog, deleteBlog, loading }}>
       {children}
     </BlogContext.Provider>
   );

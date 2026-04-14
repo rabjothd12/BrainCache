@@ -8,12 +8,17 @@ function ReadBlog() {
   const navigate = useNavigate();
   const { blogs, deleteBlog } = useBlogs();
 
-  const blog = blogs.find((b) => b._id === id);
+  // 🔥 loading state
+  if (!blogs) {
+    return <p>Loading...</p>;
+  }
+
+  const blog = blogs?.find((b) => b._id === id);
 
   if (!blog) {
     return (
       <div className="read-blog">
-        <h2>Blog not found</h2>
+        <h2>This blog doesn’t exist anymore 💀</h2>
         <Link to="/dashboard">← Back to Dashboard</Link>
       </div>
     );
@@ -24,9 +29,14 @@ function ReadBlog() {
       "Are you sure you want to delete this blog?"
     );
 
-    if (confirmDelete) {
-      await deleteBlog(blog._id); // 🔥 FIXED (_id instead of id)
-      navigate("/dashboard");     // 🔥 redirect after delete
+    if (!confirmDelete) return;
+
+    try {
+      await deleteBlog(blog._id);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Delete failed:", error);
+      alert("Failed to delete blog");
     }
   };
 
@@ -57,7 +67,6 @@ function ReadBlog() {
 
       <h1 className="read-title">{blog.title}</h1>
 
-      {/* optional: backend doesn't send "date", so fallback */}
       <p className="read-date">
         {blog.createdAt
           ? new Date(blog.createdAt).toLocaleDateString()

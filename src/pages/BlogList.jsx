@@ -7,7 +7,7 @@ function BlogList() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/blogs")
+    fetch(`${import.meta.env.VITE_API_URL}/api/blogs`)
       .then((res) => res.json())
       .then((data) => {
         setBlogs(data);
@@ -19,7 +19,20 @@ function BlogList() {
       });
   }, []);
 
+  // 🔥 loading state
   if (loading) return <p>Loading blogs...</p>;
+
+  // 💀 empty state
+  if (!blogs || blogs.length === 0) {
+    return (
+      <div className="blog-list">
+        <h1>All Blogs</h1>
+        <p className="empty-text">
+          No blogs available yet — be the first to write ✨
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="blog-list">
@@ -32,7 +45,11 @@ function BlogList() {
             id={blog._id}
             title={blog.title}
             content={blog.content}
-            date={new Date(blog.createdAt).toLocaleDateString()}
+            date={
+              blog.createdAt
+                ? new Date(blog.createdAt).toLocaleDateString()
+                : ""
+            }
             image={blog.image}
           />
         ))}

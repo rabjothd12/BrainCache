@@ -4,6 +4,8 @@ import "../pages/styles/home.css";
 import TemplateCarousel from "../components/TemplateCarousel";
 
 function Home() {
+  const token = localStorage.getItem("token"); 
+
   return (
     <div className="home">
 
@@ -21,7 +23,7 @@ function Home() {
           </p>
 
           <motion.div whileHover={{ scale: 1.05 }}>
-            <Link to="/signup" className="btn-primary">
+            <Link to={token ? "/write" : "/signup"} className="btn-primary">
               Get Started
             </Link>
           </motion.div>
@@ -76,7 +78,7 @@ function Home() {
           </p>
 
           <motion.div whileHover={{ scale: 1.05 }}>
-            <Link to="/signup" className="btn-secondary">
+            <Link to={token ? "/write" : "/signup"} className="btn-secondary">
               Start Writing
             </Link>
           </motion.div>
@@ -106,7 +108,7 @@ function Home() {
       >
         <h2>Ready to create your blog?</h2>
         <motion.div whileHover={{ scale: 1.05 }}>
-          <Link to="/signup" className="btn-primary">
+          <Link to={token ? "/write" : "/signup"} className="btn-primary">
             Create Your Blog
           </Link>
         </motion.div>

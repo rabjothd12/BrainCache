@@ -1,34 +1,47 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useState } from "react";
-import { useBlogs } from "../context/BlogContext";
+import { useBlogs } from "../components/BlogContext";
 import BlogCard from "../components/BlogCard";
 import "./styles/dashboard.css";
 
 function Dashboard() {
-  const { blogs } = useBlogs();
+  const { blogs } = useBlogs(); // ✅ fixed
 
-  // 🔹 category + search state
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // 🔹 dynamic categories
+  // 🛡️ prevent crash before data loads
+  if (!blogs) return <p>Loading...</p>;
+
+  console.log("DASHBOARD BLOGS:", blogs); // optional debug
+
+  // Categories
   const categories = [
     "All",
-    ...new Set(blogs.map((blog) => blog.category)),
+    ...new Set(
+      blogs
+        .map((blog) => blog.category)
+        .filter((cat) => cat && cat.trim() !== "")
+    ),
   ];
 
-  // 🔹 combined filtering (CATEGORY + SEARCH)
-  const filteredBlogs = blogs
-    .filter((blog) =>
-      selectedCategory === "All"
-        ? true
-        : blog.category === selectedCategory
-    )
-    .filter((blog) =>
-      blog.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      blog.content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  // Filtering
+  const filteredBlogs = blogs.filter((blog) => {
+    const matchesCategory =
+      selectedCategory === "All" ||
+      (blog.category && blog.category === selectedCategory);
+
+    const matchesSearch =
+      (blog.title || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase()) ||
+      (blog.content || "")
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <motion.div
@@ -37,7 +50,6 @@ function Dashboard() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* HEADER */}
       <div className="dashboard-header">
         <h1>Your Blogs</h1>
 
@@ -46,7 +58,6 @@ function Dashboard() {
         </Link>
       </div>
 
-      {/* CATEGORY FILTERS */}
       {categories.length > 1 && (
         <div className="filter-bar">
           {categories.map((cat) => (
@@ -61,21 +72,23 @@ function Dashboard() {
         </div>
       )}
 
-      {/* 🔍 SEARCH BAR */}
       <div className="search-bar">
         <input
           type="text"
-          placeholder="Search blogs by title or content..."
+          placeholder="Search blogs..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
       </div>
 
-      {/* BLOG GRID */}
       {filteredBlogs.length > 0 ? (
         <div className="dashboard-grid">
           {filteredBlogs.map((blog) => (
-            <BlogCard key={blog.id} {...blog} />
+            <BlogCard
+              key={blog._id}               // 🔥 FIXED
+              id={blog._id}                // 🔥 FIXED
+              {...blog}
+            />
           ))}
         </div>
       ) : (

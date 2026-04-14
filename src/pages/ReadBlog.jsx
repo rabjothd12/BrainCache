@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useBlogs } from "../context/BlogContext";
+import { useBlogs } from "../components/BlogContext";
 import "./styles/readBlog.css";
 
 function ReadBlog() {
@@ -8,7 +8,7 @@ function ReadBlog() {
   const navigate = useNavigate();
   const { blogs, deleteBlog } = useBlogs();
 
-  const blog = blogs.find((b) => b.id === Number(id));
+  const blog = blogs.find((b) => b._id === id);
 
   if (!blog) {
     return (
@@ -19,14 +19,14 @@ function ReadBlog() {
     );
   }
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     const confirmDelete = window.confirm(
       "Are you sure you want to delete this blog?"
     );
 
     if (confirmDelete) {
-      deleteBlog(blog.id);
-      navigate("/dashboard");
+      await deleteBlog(blog._id); // 🔥 FIXED (_id instead of id)
+      navigate("/dashboard");     // 🔥 redirect after delete
     }
   };
 
@@ -56,7 +56,13 @@ function ReadBlog() {
       )}
 
       <h1 className="read-title">{blog.title}</h1>
-      <p className="read-date">{blog.date}</p>
+
+      {/* optional: backend doesn't send "date", so fallback */}
+      <p className="read-date">
+        {blog.createdAt
+          ? new Date(blog.createdAt).toLocaleDateString()
+          : ""}
+      </p>
 
       <div className="read-content">{blog.content}</div>
     </motion.div>

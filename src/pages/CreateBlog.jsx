@@ -1,6 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useBlogs } from "../context/BlogContext";
 import "./styles/createBlog.css";
 
 function CreateBlog() {
@@ -9,9 +8,14 @@ function CreateBlog() {
   const [content, setContent] = useState("");
   const [image, setImage] = useState(null);
 
-  const { addBlog } = useBlogs();
-  const navigate = useNavigate();
+  const [draftId, setDraftId] = useState(null);
+  const [ideas, setIdeas] = useState("");
+  const [suggestion, setSuggestion] = useState("");
 
+  const navigate = useNavigate();
+  const token = localStorage.getItem("token");
+
+  // 🖼 Image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -23,50 +27,186 @@ function CreateBlog() {
     reader.readAsDataURL(file);
   };
 
-  const handlePublish = (e) => {
+  // 🔥 AUTO SAVE
+  useEffect(() => {
+    if (!title && !content && !category && !image) return;
+
+    const timer = setTimeout(() => {
+      autoSaveDraft();
+    }, 2000);
+
+    return () => clearTimeout(timer);
+  }, [title, content, category, image]);
+
+  const autoSaveDraft = async () => {
+    try {
+      let url = "http://localhost:5000/api/blogs";
+      let method = "POST";
+
+      if (draftId) {
+        url = `http://localhost:5000/api/blogs/${draftId}`;
+        method = "PUT";
+      }
+
+      const res = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          category,
+          content,
+          image,
+          isDraft: true,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!draftId) {
+        setDraftId(data._id);
+      }
+
+      console.log("Auto-saved draft");
+    } catch (error) {
+      console.error("Auto-save failed", error);
+    }
+  };
+
+  // 🔥 AI IDEA
+  const generateIdea = async () => {
+    try {
+      const res = await fetch("http://localhost:5000/api/ai/idea", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          topic: title || category || "blog ideas",
+        }),
+      });
+
+      const data = await res.json();
+      setIdeas(data.idea);
+    } catch (error) {
+      console.error("AI error:", error);
+    }
+  };
+
+  const useIdea = () => {
+    if (!ideas) return;
+
+    const lines = ideas.split("\n").filter(Boolean);
+
+    setTitle(lines[0] || "");
+    setContent(lines.slice(1).join("\n"));
+  };
+
+  // 🔥 AI AUTOCOMPLETE
+  const getSuggestion = async () => {
+    if (!content) return;
+
+    try {
+      const res = await fetch("http://localhost:5000/api/ai/autocomplete", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content }),
+      });
+
+      const data = await res.json();
+      setSuggestion(data.text);
+    } catch (error) {
+      console.error("Autocomplete error:", error);
+    }
+  };
+
+  const addSuggestion = () => {
+    setContent((prev) => prev + " " + suggestion);
+    setSuggestion("");
+  };
+
+  // 🔥 PUBLISH
+  const handlePublish = async (e) => {
     e.preventDefault();
 
-    addBlog({
-      id: Date.now(),
-      title,
-      category,
-      content,
-      image,
-      date: new Date().toLocaleDateString(),
-    });
+    try {
+      await fetch(`http://localhost:5000/api/blogs/${draftId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          category,
+          content,
+          image,
+          isDraft: false,
+        }),
+      });
 
-    navigate("/dashboard");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Publish failed", error);
+    }
   };
 
   return (
     <div className="create-blog">
-      <h1>Create New Blog</h1>
+      <h1>Create Blog</h1>
 
       <form onSubmit={handlePublish} className="blog-form">
         <label>Title</label>
-        <input value={title} onChange={(e) => setTitle(e.target.value)} required />
+        <input value={title} onChange={(e) => setTitle(e.target.value)} />
 
         <label>Category</label>
-        <input
-          type="text"
-          placeholder="e.g. AI, Travel, Fitness"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
-          required
-        />
+        <input value={category} onChange={(e) => setCategory(e.target.value)} />
 
         <label>Cover Image</label>
-        <input type="file" accept="image/*" onChange={handleImageUpload} />
+        <input type="file" onChange={handleImageUpload} />
+        {image && <img src={image} alt="preview" />}
 
-        {image && <img src={image} alt="Preview" className="image-preview" />}
+        {/* 🔥 AI IDEA */}
+        <button type="button" onClick={generateIdea}>
+          💡 Generate Ideas
+        </button>
+
+        {/* 🔥 AI IDEA OUTPUT */}
+        {ideas && (
+          <div className="ai-box">
+            <h3>AI Ideas</h3>
+            <pre>{ideas}</pre>
+            <button type="button" onClick={useIdea}>
+              ✨ Use Idea
+            </button>
+          </div>
+        )}
 
         <label>Content</label>
         <textarea
           value={content}
           onChange={(e) => setContent(e.target.value)}
-          rows="10"
-          required
         />
+
+        {/* 🔥 AUTOCOMPLETE */}
+        <button type="button" onClick={getSuggestion}>
+          ✨ Continue Writing
+        </button>
+
+        {/* 🔥 AUTOCOMPLETE OUTPUT */}
+        {suggestion && (
+          <div className="ai-box">
+            <h3>AI Continuation</h3>
+            <p>{suggestion}</p>
+            <button type="button" onClick={addSuggestion}>
+              ➕ Add to Blog
+            </button>
+          </div>
+        )}
 
         <button type="submit">Publish</button>
       </form>

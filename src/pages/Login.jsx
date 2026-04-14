@@ -1,22 +1,60 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "../context/AuthContext";
 import "./styles/auth.css";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [step, setStep] = useState("email");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation(); 
+  const { login } = useAuth();
+
+  const from = location.state?.from?.pathname || "/dashboard"; 
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     setStep("password");
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log("Email:", email);
-    console.log("Password:", password);
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Login failed");
+      }
+
+      login(data.token);
+
+      console.log("Login success:", data);
+
+      navigate(from, { replace: true }); 
+
+    } catch (error) {
+      console.error("Login error:", error.message);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -26,7 +64,6 @@ function Login() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
     >
-      {/* Title */}
       <div className="login-title">
         <h1>Log In</h1>
         <p>
@@ -37,14 +74,12 @@ function Login() {
         </p>
       </div>
 
-      {/* Card */}
       <motion.div
         className="login-box"
         initial={{ scale: 0.97, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.3 }}
       >
-        {/* Left */}
         <form
           className="login-left"
           onSubmit={step === "email" ? handleEmailSubmit : handleLogin}
@@ -105,10 +140,11 @@ function Login() {
                 <motion.button
                   className="email-btn"
                   type="submit"
+                  disabled={loading}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  Log In →
+                  {loading ? "Logging in..." : "Log In →"}
                 </motion.button>
 
                 <button
@@ -126,18 +162,17 @@ function Login() {
           </AnimatePresence>
         </form>
 
-        {/* Divider */}
         <div className="divider">
           <span>or</span>
         </div>
 
-        {/* Right */}
         <div className="login-right">
           {["Google", "Facebook", "Apple"].map((provider) => (
             <motion.button
               key={provider}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.97 }}
+              onClick={() => alert("Coming soon")}
             >
               Continue with {provider}
             </motion.button>
@@ -153,7 +188,6 @@ function Login() {
         </div>
       </motion.div>
 
-      {/* Footer */}
       <footer className="login-footer">
         <span>Terms of Use</span>
         <span>Privacy Policy</span>

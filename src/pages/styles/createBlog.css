@@ -48,3 +48,56 @@
   border: 1px solid var(--border);
 }
 
+@media (max-width: 768px) {
+  .create-blog {
+    padding: 2rem 1rem;
+  }
+
+  .create-blog h1 {
+    font-size: 1.6rem;
+    text-align: center;
+  }
+
+  .blog-form {
+    gap: 1.2rem;
+  }
+
+  .blog-form input,
+  .blog-form textarea {
+    font-size: 0.95rem;
+    padding: 0.7rem 0.9rem;
+  }
+
+  .blog-form textarea {
+    min-height: 150px;
+  }
+
+  .blog-form button {
+    width: 100%;
+    text-align: center;
+    padding: 0.8rem;
+  }
+
+  .image-preview {
+    max-height: 200px;
+  }
+}
+
+@media (max-width: 480px) {
+  .create-blog {
+    padding: 1.5rem 0.8rem;
+  }
+
+  .create-blog h1 {
+    font-size: 1.4rem;
+  }
+
+  .blog-form input,
+  .blog-form textarea {
+    font-size: 0.9rem;
+  }
+
+  .blog-form button {
+    font-size: 0.9rem;
+  }
+}

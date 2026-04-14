@@ -6,7 +6,7 @@ import "./index.css";
 
 import { AuthProvider } from "./context/AuthContext";
 import { ThemeProvider } from "./context/ThemeContext";
-import { BlogProvider } from "./context/BlogContext";
+import { BlogProvider } from "./components/BlogContext";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

@@ -1,20 +1,24 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import "./styles/auth.css";
 
 function Signup() {
   const [email, setEmail] = useState("");
+  const [name, setName] = useState(""); 
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [step, setStep] = useState("email");
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleEmailSubmit = (e) => {
     e.preventDefault();
     setStep("password");
   };
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
 
     if (password !== confirmPassword) {
@@ -22,7 +26,39 @@ function Signup() {
       return;
     }
 
-    console.log("Signup:", email, password);
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name,     
+          email,
+          password,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data.message || "Signup failed");
+      }
+
+      localStorage.setItem("token", data.token);
+
+      console.log("Signup success:", data);
+
+      navigate("/");
+
+    } catch (error) {
+      console.error("Signup error:", error.message);
+      alert(error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -56,6 +92,8 @@ function Signup() {
           onSubmit={step === "email" ? handleEmailSubmit : handleSignup}
         >
           <AnimatePresence mode="wait">
+
+            {/* STEP 1: EMAIL + NAME */}
             {step === "email" && (
               <motion.div
                 key="email"
@@ -64,6 +102,14 @@ function Signup() {
                 exit={{ opacity: 0, x: 20 }}
                 transition={{ duration: 0.25 }}
               >
+                <label>Name</label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                />
+
                 <label>Email</label>
                 <input
                   type="email"
@@ -75,7 +121,7 @@ function Signup() {
                 <motion.button
                   className="email-btn"
                   type="submit"
-                  disabled={!email}
+                  disabled={!email || !name}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
@@ -84,6 +130,7 @@ function Signup() {
               </motion.div>
             )}
 
+            {/* STEP 2: PASSWORD */}
             {step === "password" && (
               <motion.div
                 key="password"
@@ -113,10 +160,11 @@ function Signup() {
                 <motion.button
                   className="email-btn"
                   type="submit"
+                  disabled={loading}
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                 >
-                  Create Account →
+                  {loading ? "Creating..." : "Create Account →"}
                 </motion.button>
 
                 <button

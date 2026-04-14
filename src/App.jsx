@@ -5,10 +5,9 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
 import CreateBlog from "./pages/CreateBlog";
-import ProtectedRoute from "./components/ProtectedRoute";
 import BlogList from "./pages/BlogList";
 import ReadBlog from "./pages/ReadBlog";
-
+import Dashboard from "./pages/Dashboard";
 
 function App() {
   return (
@@ -19,9 +18,10 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-        <Route path="/write" element={<ProtectedRoute> <CreateBlog /> </ProtectedRoute>}/>
+        <Route path="/write" element={<CreateBlog />} />
         <Route path="/blogs" element={<BlogList />} />
-        <Route path="/blog/:id" element={<ProtectedRoute><ReadBlog /></ProtectedRoute>} />
+        <Route path="/blog/:id" element={<ReadBlog />} />
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

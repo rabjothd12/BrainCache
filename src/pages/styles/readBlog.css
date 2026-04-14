@@ -26,7 +26,7 @@
 
 .read-content {
   line-height: 1.7;
-  white-space: pre-wrap; /* keeps line breaks */
+  white-space: pre-wrap; 
 }
 .read-blog-img {
   width: 100%;
@@ -44,7 +44,7 @@
 }
 
 .delete-btn {
-  background: #dc2626; /* red */
+  background: #dc2626; 
   color: #fff;
   border: none;
   padding: 0.5rem 1.2rem;
@@ -55,4 +55,80 @@
 
 .delete-btn:hover {
   opacity: 0.9;
+}
+
+@media (max-width: 900px) {
+  .read-blog {
+    padding: 2.5rem 1.2rem;
+  }
+
+  .read-title {
+    font-size: 2rem;
+  }
+
+  .read-blog-img {
+    max-height: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .read-blog {
+    padding: 2rem 1rem;
+  }
+
+  .read-title {
+    font-size: 1.6rem;
+    line-height: 1.3;
+  }
+
+  .read-date {
+    margin-bottom: 1.5rem;
+  }
+
+  .read-blog-img {
+    max-height: 240px;
+    border-radius: 12px;
+  }
+
+  .read-actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.8rem;
+  }
+
+  .delete-btn {
+    width: 100%;
+    text-align: center;
+    padding: 0.7rem;
+  }
+
+  .back-link {
+    font-size: 0.85rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .read-blog {
+    padding: 1.5rem 0.7rem;
+  }
+
+  .read-title {
+    font-size: 1.4rem;
+  }
+
+  .read-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+}
+
+@media (min-width: 1400px) {
+  .read-blog {
+    max-width: 900px;
+  }
+
+  .read-content {
+    font-size: 1.05rem;
+    line-height: 1.8;
+  }
 }

@@ -1,21 +1,25 @@
+import { useEffect, useState } from "react";
 import BlogCard from "../components/BlogCard";
 import "./styles/BlogList.css";
 
 function BlogList() {
-  const blogs = [
-    {
-      id: 1,
-      title: "My First Blog",
-      content: "This is my first blog content...",
-      date: "Sep 2026",
-    },
-    {
-      id: 2,
-      title: "Learning React",
-      content: "React is a powerful library...",
-      date: "Sep 2026",
-    },
-  ];
+  const [blogs, setBlogs] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/api/blogs")
+      .then((res) => res.json())
+      .then((data) => {
+        setBlogs(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching blogs:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  if (loading) return <p>Loading blogs...</p>;
 
   return (
     <div className="blog-list">
@@ -24,10 +28,12 @@ function BlogList() {
       <div className="blog-grid">
         {blogs.map((blog) => (
           <BlogCard
-            key={blog.id}
+            key={blog._id}
+            id={blog._id}
             title={blog.title}
             content={blog.content}
-            date={blog.date}
+            date={new Date(blog.createdAt).toLocaleDateString()}
+            image={blog.image}
           />
         ))}
       </div>

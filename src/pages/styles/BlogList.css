@@ -10,3 +10,37 @@
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
   gap: 2rem;
 }
+
+@media (max-width: 900px) {
+  .blog-grid {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .blog-list {
+    padding: 2rem 0.8rem;
+  }
+
+  .blog-grid {
+    grid-template-columns: 1fr;
+    gap: 1.2rem;
+  }
+}
+
+@media (max-width: 400px) {
+  .blog-list {
+    padding: 1.5rem 0.5rem;
+  }
+
+  .blog-grid {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1400px) {
+  .blog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2.5rem;
+  }
+}

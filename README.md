@@ -1,16 +1,84 @@
-# React + Vite
+# 🧠 BrainCache – AI-Powered Blogging Platform
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+BrainCache is a full-stack blogging platform designed to enhance the writing experience using AI-powered assistance. It enables users to create, manage, and improve blogs with features like idea generation, autocomplete, and auto-saving drafts.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Live Demo
 
-## React Compiler
+🔗 https://brain-cache-omega.vercel.app
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+* 🔐 JWT-based Authentication (Login / Signup)
+* 📝 Create, Read, Delete Blogs
+* 💾 Auto-Save Draft System (prevents data loss)
+* 🤖 AI Idea Generator (generate blog topics + intros)
+* ✍️ AI Autocomplete (continue writing content)
+* 📂 Category Filtering & Search
+* 🖼 Image Upload Support
+* 📱 Fully Responsive UI
+* ☁️ Deployed Full-Stack Application
+
+---
+
+## 🧱 Tech Stack
+
+### Frontend
+
+* React (Vite)
+* CSS (Custom Styling)
+* Framer Motion (Animations)
+
+### Backend
+
+* Node.js
+* Express.js
+* MongoDB Atlas
+
+### AI Integration
+
+* OpenRouter API
+
+### Deployment
+
+* Frontend: Vercel
+* Backend: Render
+
+---
+
+## 📂 Project Structure
+
+```bash
+blog-app/
+├── server/        # Backend (Node + Express)
+├── src/           # Frontend source code
+├── public/        # Static assets
+├── package.json   # Frontend dependencies
+├── vite.config.js
+```
+
+## 🧠 Key Highlights
+
+* Implemented real-time draft auto-saving using debouncing
+* Integrated AI features to enhance writing workflow
+* Solved deployment issues (CORS, environment variables, API integration)
+* Built a complete full-stack application with production deployment
+
+---
+
+---
+
+## 👨‍💻 Author
+
+Rabjoth
+
+---
+
+## 📌 Note
+
+This project focuses on improving user writing experience using AI rather than just implementing basic CRUD functionality.
+
+---

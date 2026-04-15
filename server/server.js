@@ -7,7 +7,9 @@ const app = express();
 
 //Middleware
 app.use(cors({
-  origin: "*", // for now (later restrict to Vercel)
+  origin: [
+    "https://brain-cache-omega.vercel.app"
+  ]
 }));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ limit: "10mb", extended: true }));

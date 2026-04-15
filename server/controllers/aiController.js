@@ -1,9 +1,15 @@
 const fetch = require("node-fetch");
 
-// 🔥 GENERATE IDEAS
+const cache = {};
+
 exports.generateIdea = async (req, res) => {
   try {
     const { topic } = req.body;
+    const key = topic || "general";
+
+    if (cache[key]) {
+      return res.json({ idea: cache[key] });
+    }
 
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
@@ -12,58 +18,27 @@ exports.generateIdea = async (req, res) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
+        model: "mistralai/mistral-7b-instruct",
+        max_tokens: 100,
+        temperature: 0.7,
         messages: [
           {
             role: "user",
-            content: `Give 3 creative blog ideas with short engaging intros about: ${topic || "general blogging"}`,
+            content: `Give exactly 3 short blog ideas (1 line each, no explanation) about: ${key}`,
           },
         ],
       }),
     });
 
     const data = await response.json();
+    const result = data.choices[0].message.content;
 
-    res.json({
-      idea: data.choices[0].message.content,
-    });
+    cache[key] = result;
+
+    res.json({ idea: result });
 
   } catch (error) {
     console.error("AI ERROR:", error);
     res.status(500).json({ message: "AI failed" });
-  }
-};
-
-// 🔥 AUTOCOMPLETE
-exports.autoComplete = async (req, res) => {
-  try {
-    const { content } = req.body;
-
-    const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "deepseek/deepseek-chat",
-        messages: [
-          {
-            role: "user",
-            content: `Continue this blog naturally:\n${content}`,
-          },
-        ],
-      }),
-    });
-
-    const data = await response.json();
-
-    res.json({
-      text: data.choices[0].message.content,
-    });
-
-  } catch (error) {
-    console.error("Autocomplete ERROR:", error);
-    res.status(500).json({ message: "Autocomplete failed" });
   }
 };

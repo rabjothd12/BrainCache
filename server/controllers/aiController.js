@@ -3,6 +3,7 @@ const fetch = require("node-fetch");
 const ideaCache = {};
 const autoCache = {};
 
+// timeout wrapper
 const fetchWithTimeout = async (url, options, timeoutMs = 8000) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
@@ -20,11 +21,13 @@ const fetchWithTimeout = async (url, options, timeoutMs = 8000) => {
   }
 };
 
+// 🔥 GENERATE IDEA
 exports.generateIdea = async (req, res) => {
   try {
     const { topic } = req.body;
     const key = topic || "general";
 
+    // cache
     if (ideaCache[key]) {
       return res.json({ idea: ideaCache[key] });
     }
@@ -38,13 +41,13 @@ exports.generateIdea = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-7b-instruct",
-          max_tokens: 100,
+          model: "mistralai/mistral-7b-instruct", // 🔥 FAST + STABLE
+          max_tokens: 60,
           temperature: 0.7,
           messages: [
             {
               role: "user",
-              content: `Give exactly 3 short blog ideas (1 line each, no explanation) about: ${key}`,
+              content: `Give 3 very short blog titles (max 5 words) about: ${key}`,
             },
           ],
         }),
@@ -53,8 +56,16 @@ exports.generateIdea = async (req, res) => {
 
     const data = await response.json();
 
-    if (!data || !data.choices || !data.choices[0]) {
-      console.error("Bad AI response:", data);
+    // ✅ CRITICAL FIX
+    if (!response.ok) {
+      console.error("OpenRouter HTTP Error:", response.status);
+      console.error("Response:", data);
+      return res.status(500).json({ message: "AI API failed" });
+    }
+
+    // ✅ SAFE VALIDATION
+    if (!data?.choices?.[0]?.message?.content) {
+      console.error("Invalid AI structure:", data);
       return res.status(500).json({ message: "Invalid AI response" });
     }
 
@@ -71,6 +82,7 @@ exports.generateIdea = async (req, res) => {
 };
 
 
+// 🔥 AUTOCOMPLETE
 exports.autoComplete = async (req, res) => {
   try {
     const { content } = req.body;
@@ -94,13 +106,13 @@ exports.autoComplete = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "meta-llama/llama-3-8b-instruct",
-          max_tokens: 80,
+          model: "mistralai/mistral-7b-instruct", // 🔥 switched from llama → faster
+          max_tokens: 50,
           temperature: 0.6,
           messages: [
             {
               role: "user",
-              content: `Continue this blog in a natural and concise way:\n${content.slice(-300)}`,
+              content: `Continue this blog naturally:\n${content.slice(-150)}`,
             },
           ],
         }),
@@ -109,8 +121,16 @@ exports.autoComplete = async (req, res) => {
 
     const data = await response.json();
 
-    if (!data || !data.choices || !data.choices[0]) {
-      console.error("Bad autocomplete response:", data);
+    // ✅ CRITICAL FIX
+    if (!response.ok) {
+      console.error("OpenRouter HTTP Error:", response.status);
+      console.error("Response:", data);
+      return res.status(500).json({ message: "AI API failed" });
+    }
+
+    // ✅ SAFE VALIDATION
+    if (!data?.choices?.[0]?.message?.content) {
+      console.error("Invalid autocomplete structure:", data);
       return res.status(500).json({ message: "Invalid AI response" });
     }
 

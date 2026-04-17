@@ -42,7 +42,7 @@ exports.generateIdea = async (req, res) => {
     res.json({ idea: result });
 
   } catch (error) {
-    console.error("Groq ERROR:", error.message);
+    console.error("Groq ERROR:", error);
 
     return res.json({
       idea: "AI temporarily unavailable, try again.",

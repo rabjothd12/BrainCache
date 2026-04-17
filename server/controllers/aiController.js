@@ -1,25 +1,11 @@
-const fetch = require("node-fetch");
+const Groq = require("groq-sdk");
+
+const groq = new Groq({
+  apiKey: process.env.GROQ_API_KEY,
+});
 
 const ideaCache = {};
 const autoCache = {};
-
-// 🔥 FIXED TIMEOUT (30s)
-const fetchWithTimeout = async (url, options, timeoutMs = 30000) => {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), timeoutMs);
-
-  try {
-    const response = await fetch(url, {
-      ...options,
-      signal: controller.signal,
-    });
-    clearTimeout(timeout);
-    return response;
-  } catch (err) {
-    clearTimeout(timeout);
-    throw err;
-  }
-};
 
 // 🔥 GENERATE IDEA
 exports.generateIdea = async (req, res) => {
@@ -27,62 +13,39 @@ exports.generateIdea = async (req, res) => {
     const { topic } = req.body;
     const key = topic || "general";
 
-    // cache
     if (ideaCache[key]) {
       return res.json({ idea: ideaCache[key] });
     }
 
-    const response = await fetchWithTimeout(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
+    const response = await groq.chat.completions.create({
+      model: "llama3-8b-8192", // ⚡ fast + reliable
+      messages: [
+        {
+          role: "user",
+          content: `Give 3 very short blog titles (max 5 words) about: ${key}`,
         },
-        body: JSON.stringify({
-          model: "openchat/openchat-7b", // 🔥 faster model
-          max_tokens: 50,
-          temperature: 0.7,
-          messages: [
-            {
-              role: "user",
-              content: `Give 3 very short blog titles (max 5 words) about: ${key}`,
-            },
-          ],
-        }),
-      }
-    );
+      ],
+      temperature: 0.7,
+      max_tokens: 60,
+    });
 
-    const data = await response.json();
+    const result = response.choices[0]?.message?.content;
 
-    // ✅ HANDLE API FAILURE (NO 500)
-    if (!response.ok) {
-      console.error("OpenRouter Error:", data);
+    if (!result) {
       return res.json({
-        idea: "AI is busy right now, try again."
+        idea: "No ideas generated, try again.",
       });
     }
-
-    // ✅ SAFE VALIDATION
-    if (!data?.choices?.[0]?.message?.content) {
-      console.error("Invalid AI structure:", data);
-      return res.json({
-        idea: "No ideas generated, try again."
-      });
-    }
-
-    const result = data.choices[0].message.content;
 
     ideaCache[key] = result;
 
     res.json({ idea: result });
 
   } catch (error) {
-    console.error("AI ERROR:", error.message);
+    console.error("Groq ERROR:", error.message);
 
     return res.json({
-      idea: "Temporary AI issue, please retry."
+      idea: "AI temporarily unavailable, try again.",
     });
   }
 };
@@ -103,57 +66,31 @@ exports.autoComplete = async (req, res) => {
       return res.json({ text: autoCache[key] });
     }
 
-    const response = await fetchWithTimeout(
-      "https://openrouter.ai/api/v1/chat/completions",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          "Content-Type": "application/json",
+    const response = await groq.chat.completions.create({
+      model: "llama3-8b-8192",
+      messages: [
+        {
+          role: "user",
+          content: `Continue this blog naturally:\n${content.slice(-150)}`,
         },
-        body: JSON.stringify({
-          model: "openchat/openchat-7b", // 🔥 faster model
-          max_tokens: 50,
-          temperature: 0.6,
-          messages: [
-            {
-              role: "user",
-              content: `Continue this blog naturally:\n${content.slice(-150)}`,
-            },
-          ],
-        }),
-      }
-    );
+      ],
+      temperature: 0.6,
+      max_tokens: 80,
+    });
 
-    const data = await response.json();
+    const result = response.choices[0]?.message?.content;
 
-    // ✅ HANDLE API FAILURE
-    if (!response.ok) {
-      console.error("Autocomplete Error:", data);
-      return res.json({
-        text: ""
-      });
+    if (!result) {
+      return res.json({ text: "" });
     }
-
-    // ✅ SAFE VALIDATION
-    if (!data?.choices?.[0]?.message?.content) {
-      console.error("Invalid autocomplete structure:", data);
-      return res.json({
-        text: ""
-      });
-    }
-
-    const result = data.choices[0].message.content;
 
     autoCache[key] = result;
 
     res.json({ text: result });
 
   } catch (error) {
-    console.error("Autocomplete ERROR:", error.message);
+    console.error("Groq Autocomplete ERROR:", error.message);
 
-    return res.json({
-      text: ""
-    });
+    return res.json({ text: "" });
   }
 };

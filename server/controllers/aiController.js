@@ -3,8 +3,8 @@ const fetch = require("node-fetch");
 const ideaCache = {};
 const autoCache = {};
 
-// timeout wrapper
-const fetchWithTimeout = async (url, options, timeoutMs = 8000) => {
+// 🔥 FIXED TIMEOUT (30s)
+const fetchWithTimeout = async (url, options, timeoutMs = 30000) => {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
 
@@ -41,8 +41,8 @@ exports.generateIdea = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-7b-instruct", // 🔥 FAST + STABLE
-          max_tokens: 60,
+          model: "openchat/openchat-7b", // 🔥 faster model
+          max_tokens: 50,
           temperature: 0.7,
           messages: [
             {
@@ -56,17 +56,20 @@ exports.generateIdea = async (req, res) => {
 
     const data = await response.json();
 
-    // ✅ CRITICAL FIX
+    // ✅ HANDLE API FAILURE (NO 500)
     if (!response.ok) {
-      console.error("OpenRouter HTTP Error:", response.status);
-      console.error("Response:", data);
-      return res.status(500).json({ message: "AI API failed" });
+      console.error("OpenRouter Error:", data);
+      return res.json({
+        idea: "AI is busy right now, try again."
+      });
     }
 
     // ✅ SAFE VALIDATION
     if (!data?.choices?.[0]?.message?.content) {
       console.error("Invalid AI structure:", data);
-      return res.status(500).json({ message: "Invalid AI response" });
+      return res.json({
+        idea: "No ideas generated, try again."
+      });
     }
 
     const result = data.choices[0].message.content;
@@ -77,7 +80,10 @@ exports.generateIdea = async (req, res) => {
 
   } catch (error) {
     console.error("AI ERROR:", error.message);
-    res.status(500).json({ message: "AI failed" });
+
+    return res.json({
+      idea: "Temporary AI issue, please retry."
+    });
   }
 };
 
@@ -106,7 +112,7 @@ exports.autoComplete = async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "mistralai/mistral-7b-instruct", // 🔥 switched from llama → faster
+          model: "openchat/openchat-7b", // 🔥 faster model
           max_tokens: 50,
           temperature: 0.6,
           messages: [
@@ -121,17 +127,20 @@ exports.autoComplete = async (req, res) => {
 
     const data = await response.json();
 
-    // ✅ CRITICAL FIX
+    // ✅ HANDLE API FAILURE
     if (!response.ok) {
-      console.error("OpenRouter HTTP Error:", response.status);
-      console.error("Response:", data);
-      return res.status(500).json({ message: "AI API failed" });
+      console.error("Autocomplete Error:", data);
+      return res.json({
+        text: ""
+      });
     }
 
     // ✅ SAFE VALIDATION
     if (!data?.choices?.[0]?.message?.content) {
       console.error("Invalid autocomplete structure:", data);
-      return res.status(500).json({ message: "Invalid AI response" });
+      return res.json({
+        text: ""
+      });
     }
 
     const result = data.choices[0].message.content;
@@ -142,6 +151,9 @@ exports.autoComplete = async (req, res) => {
 
   } catch (error) {
     console.error("Autocomplete ERROR:", error.message);
-    res.status(500).json({ message: "Autocomplete failed" });
+
+    return res.json({
+      text: ""
+    });
   }
 };

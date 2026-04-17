@@ -18,7 +18,7 @@ exports.generateIdea = async (req, res) => {
     }
 
     const response = await groq.chat.completions.create({
-      model: "llama3-8b-8192", // ⚡ fast + reliable
+      model: "mixtral-8x7b-32768",
       messages: [
         {
           role: "user",
@@ -67,7 +67,7 @@ exports.autoComplete = async (req, res) => {
     }
 
     const response = await groq.chat.completions.create({
-      model: "llama3-8b-8192",
+      model: "mixtral-8x7b-32768",
       messages: [
         {
           role: "user",

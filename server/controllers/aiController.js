@@ -7,7 +7,6 @@ const groq = new Groq({
 const ideaCache = {};
 const autoCache = {};
 
-// 🔥 GENERATE IDEA
 exports.generateIdea = async (req, res) => {
   try {
     const { topic } = req.body;
@@ -22,7 +21,21 @@ exports.generateIdea = async (req, res) => {
       messages: [
         {
           role: "user",
-          content: `Give 3 very short blog titles (max 5 words) about: ${key}`,
+          content: `You are a professional blog strategist.
+
+Generate exactly 3 blog post ideas about: "${key}"
+
+Rules:
+- Each idea must be 1 short, catchy title (max 6 words)
+- Do NOT include numbering
+- Do NOT include explanations
+- Each idea on a new line
+- Make them engaging and modern
+
+Output format:
+Title 1
+Title 2
+Title 3`,
         },
       ],
       temperature: 0.7,
@@ -50,8 +63,6 @@ exports.generateIdea = async (req, res) => {
   }
 };
 
-
-// 🔥 AUTOCOMPLETE
 exports.autoComplete = async (req, res) => {
   try {
     const { content } = req.body;
@@ -71,7 +82,19 @@ exports.autoComplete = async (req, res) => {
       messages: [
         {
           role: "user",
-          content: `Continue this blog naturally:\n${content.slice(-150)}`,
+          content: `You are a skilled blog writer.
+
+Continue the following blog in a natural, engaging tone.
+
+Rules:
+- Write 2–3 short sentences only
+- Keep it clear and readable
+- Match the tone of the existing content
+- Do NOT repeat existing text
+- Do NOT add headings or explanations
+
+Blog:
+${content.slice(-200)}`,
         },
       ],
       temperature: 0.6,

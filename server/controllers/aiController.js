@@ -10,7 +10,11 @@ const autoCache = {};
 exports.generateIdea = async (req, res) => {
   try {
     const { topic } = req.body;
-    const key = topic || "general";
+
+    const key =
+      topic && topic.trim() !== ""
+        ? topic
+        : "latest trends in technology, geopolitics, sports, and business";
 
     if (ideaCache[key]) {
       return res.json({ idea: ideaCache[key] });
@@ -21,16 +25,20 @@ exports.generateIdea = async (req, res) => {
       messages: [
         {
           role: "user",
-          content: `You are a professional blog strategist.
+          content: `You are a professional content strategist.
 
 Generate exactly 3 blog post ideas about: "${key}"
 
+STRICT CONTEXT:
+- Topics must be from real-world domains like Technology, Geopolitics, Sports, Business, or Current Affairs
+- Do NOT generate topics about blogging, writing, or content creation
+
 Rules:
-- Each idea must be 1 short, catchy title (max 6 words)
-- Do NOT include numbering
-- Do NOT include explanations
+- Each idea must be a short, specific title (max 7 words)
+- Make them relevant to current trends
+- Avoid generic phrases like "future of blogging"
+- No numbering
 - Each idea on a new line
-- Make them engaging and modern
 
 Output format:
 Title 1
@@ -42,13 +50,32 @@ Title 3`,
       max_tokens: 60,
     });
 
-    const result = response.choices[0]?.message?.content;
+    let result = response.choices[0]?.message?.content;
 
     if (!result) {
       return res.json({
         idea: "No ideas generated, try again.",
       });
     }
+
+    const banned = ["blogging", "content writing", "how to write"];
+
+    const isBad = banned.some((word) =>
+      result.toLowerCase().includes(word)
+    );
+
+    if (isBad) {
+      return res.json({
+        idea: "Try a more specific topic like technology or sports.",
+      });
+    }
+
+    result = result
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean)
+      .slice(0, 3)
+      .join("\n");
 
     ideaCache[key] = result;
 
@@ -84,14 +111,14 @@ exports.autoComplete = async (req, res) => {
           role: "user",
           content: `You are a skilled blog writer.
 
-Continue the following blog in a natural, engaging tone.
+Continue the blog naturally and make it insightful.
 
 Rules:
-- Write 2–3 short sentences only
-- Keep it clear and readable
-- Match the tone of the existing content
-- Do NOT repeat existing text
-- Do NOT add headings or explanations
+- Write exactly 2–3 short sentences
+- Add value (insight, trend, or explanation)
+- Match tone and flow
+- Do NOT repeat previous lines
+- No headings, no fluff
 
 Blog:
 ${content.slice(-200)}`,

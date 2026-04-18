@@ -40,7 +40,7 @@ BrainCache is a full-stack blogging platform designed to enhance the writing exp
 
 ### AI Integration
 
-* OpenRouter API
+* Groq API
 
 ### Deployment
 

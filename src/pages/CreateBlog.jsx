@@ -11,11 +11,11 @@ function CreateBlog() {
   const [draftId, setDraftId] = useState(null);
   const [ideas, setIdeas] = useState("");
   const [suggestion, setSuggestion] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
-  // 🖼 Image upload
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -27,7 +27,6 @@ function CreateBlog() {
     reader.readAsDataURL(file);
   };
 
-  // 🔥 AUTO SAVE
   useEffect(() => {
     if (!title && !content && !category && !image) return;
 
@@ -75,7 +74,6 @@ function CreateBlog() {
     }
   };
 
-  // 🔥 AI IDEA
   const generateIdea = async () => {
     try {
       const res = await fetch(
@@ -86,7 +84,7 @@ function CreateBlog() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            topic: title || category || "blog ideas",
+            topic: title || category || "technology",
           }),
         }
       );
@@ -102,13 +100,16 @@ function CreateBlog() {
     if (!ideas) return;
 
     const lines = ideas.split("\n").filter(Boolean);
+
     setTitle(lines[0] || "");
-    setContent(lines.slice(1).join("\n"));
+    setContent(""); 
   };
 
-  // 🔥 AI AUTOCOMPLETE
   const getSuggestion = async () => {
-    if (!content) return;
+    if (!content && !title) return;
+    if (loading) return;
+
+    setLoading(true);
 
     try {
       const res = await fetch(
@@ -118,7 +119,7 @@ function CreateBlog() {
           headers: {
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ content }),
+          body: JSON.stringify({ content, title }),
         }
       );
 
@@ -126,15 +127,22 @@ function CreateBlog() {
       setSuggestion(data.text);
     } catch (error) {
       console.error("Autocomplete error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
+  useEffect(() => {
+    if (title && !content) {
+      getSuggestion();
+    }
+  }, [title]);
+
   const addSuggestion = () => {
-    setContent((prev) => prev + " " + suggestion);
+    setContent((prev) => (prev ? prev + " " : "") + suggestion);
     setSuggestion("");
   };
 
-  // 🔥 PUBLISH
   const handlePublish = async (e) => {
     e.preventDefault();
 
@@ -199,7 +207,7 @@ function CreateBlog() {
         />
 
         <button type="button" onClick={getSuggestion}>
-          ✨ Continue Writing
+          {loading ? "Generating..." : "✨ Continue Writing"}
         </button>
 
         {suggestion && (

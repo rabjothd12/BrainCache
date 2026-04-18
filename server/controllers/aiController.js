@@ -92,12 +92,17 @@ Title 3`,
 
 exports.autoComplete = async (req, res) => {
   try {
-    const { content } = req.body;
+    const { content, title } = req.body;
 
-    if (!content || content.length < 10) {
-      return res.json({ text: "" });
-    }
+    let baseText = "";
 
+    if (content && content.length >= 10) {
+        baseText = content;
+    } else if (title && title.length >= 3) {
+      baseText = `Write a blog about: ${title}`;
+    } else {
+        return res.json({ text: "" });
+    }   
     const key = content.slice(-100);
 
     if (autoCache[key]) {
@@ -111,17 +116,17 @@ exports.autoComplete = async (req, res) => {
           role: "user",
           content: `You are a skilled blog writer.
 
-Continue the blog naturally and make it insightful.
+Write or continue a blog based on the input.
 
 Rules:
-- Write exactly 2–3 short sentences
-- Add value (insight, trend, or explanation)
-- Match tone and flow
-- Do NOT repeat previous lines
-- No headings, no fluff
+- If it's a title, start a blog introduction
+- If it's content, continue naturally
+- Write 2–4 short sentences
+- Make it engaging and clear
+- No headings, no repetition
 
-Blog:
-${content.slice(-200)}`,
+Input:
+${baseText.slice(-200)}`,
         },
       ],
       temperature: 0.6,
